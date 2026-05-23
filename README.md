@@ -75,3 +75,46 @@ UTM UbuntuがMac:Aの後ろに隠れており、Mac:Bからみても「Ubuntu無
 5. ip a でIP確認
 6. SSH再試行
 7. 接続成功
+
+
+### UFWによるHTTP接続の遮断トラブル
+
+#### 症状
+Mac:BのみHTTP接続を許可したはずなのにMac:Aのブラウザからもnginxの初期画面が表示されてしまう
+
+#### 対応
+- ポートの確認
+sudo ss -tulpn | grep ':80'
+確認結果
+　0.0.0.0:80 LISTEN
+- UFW設定の確認
+sudo ufw status verbose
+確認結果
+　80/tcp  ALLOW IN 192.168.179.29
+HTTP接続はMac:Bからのみになるように正しく設定されている。
+そのほかにfrom Anywhereになっている 80/tcpは無し
+
+#### 原因
+ブラウザキャッシュの可能性がある
+プライベートモードにして、Mac:AからubuntuWebサーバにアクセスしようとしたところ想定通り通信が失敗したため、解決。
+
+#### 
+
+#### SSH/Webサーバ構築メモ
+Mac:A
+└ UTM
+   └ Ubuntu Server
+      ├ SSH Server
+      └ nginx Web Server
+
+Mac:B
+└ SSH/Web接続クライアント
+
+#### UFW設定
+Mac:BのみSSH/HTTP許可
+sudo ufw allow from 192.168.179.29 to any port 2222 proto tcp
+sudo ufw allow from 192.168.179.29 to any port 80 proto tcp
+状態確認コマンド
+sudo ufw status verbose
+
+
