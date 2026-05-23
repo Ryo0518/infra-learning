@@ -77,7 +77,7 @@ UTM UbuntuがMac:Aの後ろに隠れており、Mac:Bからみても「Ubuntu無
 7. 接続成功
 
 
-### UFWによるHTTP接続の遮断トラブル
+### ⭐︎UFWによるHTTP接続の遮断トラブル
 
 #### 症状
 Mac:BのみHTTP接続を許可したはずなのにMac:Aのブラウザからもnginxの初期画面が表示されてしまう
