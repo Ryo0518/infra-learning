@@ -4,7 +4,7 @@ LinuC、Linux、CCNA、ハンズオン、トラブルシューティングの学
 
 ## Logs
 
-### UTM + Ubuntu キー入力トラブル
+### ⭐︎UTM + Ubuntu キー入力トラブル
 
 #### 発生事象
 Macで外部モニター接続後、UTM上のUbuntuを操作中に異常発生。
@@ -27,7 +27,7 @@ Command（⌘）キーが押しっぱなし状態として認識されていた�
 Linuxやviではなく、ホストOS側の入力状態も疑う。
 
 
-### UTM Ubuntu SSH接続トラブル
+### ⭐︎UTM Ubuntu SSH接続トラブル
 
 #### 症状
 Mac:AからSSH接続可能だがMac:Bからタイムアウト
