@@ -303,3 +303,59 @@ sudo chronyc makestep
 - タイムゾーンはVMごとに設定する必要がある(NTPはUTCだけ同期する)
 - ^?は同期未確立
 
+### ⭐︎DNS設定でハマった点
+
+Ubuntu-Log で `/etc/resolv.conf` を編集しても、内容が元に戻ることがあった。
+
+症状：
+- `ping ubuntu-syslog.lab` が失敗
+- `logger` のDNS名指定でsyslog転送失敗
+- IP直指定では通信成功
+- `dig @192.168.64.10 ubuntu-syslog.lab` は成功
+
+原因：
+- Ubuntuでは `systemd-resolved` が `/etc/resolv.conf` を自動管理していた
+- 手動編集した内容が自動生成で上書きされていた
+
+確認コマンド：
+```bash
+ls -l /etc/resolv.conf
+```
+
+シンボリックリンクになっていることを確認。
+
+例：
+```text
+/etc/resolv.conf -> /run/systemd/resolve/stub-resolv.conf
+```
+
+対応：
+```bash
+sudo nano /etc/systemd/resolved.conf
+```
+
+以下を追加。
+
+```conf
+[Resolve]
+DNS=192.168.64.10
+Domains=lab
+```
+
+反映：
+```bash
+sudo systemctl restart systemd-resolved
+```
+
+確認：
+```bash
+resolvectl status
+```
+
+学び：
+- IP通信とDNS名前解決は別問題
+- LinuxではDNS設定が自動管理されることがある
+- `resolv.conf` は直接編集しても保持されない場合がある
+- `dig` を使うとDNSサーバ単体の動作確認ができる
+- 障害切り分けでは「通信」「名前解決」「サービス設定」を分けて考えることが重要
+
