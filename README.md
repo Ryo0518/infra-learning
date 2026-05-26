@@ -239,6 +239,67 @@ sudo ufw allow 53/udp
 - UFWで53番ポートを開けておく必要がある
 - ゾーン定義とゾーンファイルを設定しておく必要がある。
 
+### ⭐︎NTPサーバ構築ログ（chrony）
 
+#### ゴール
+Ubuntu-NTPをNTPサーバとして動かし、Ubuntu-Logの時刻を同期する。
 
+#### 構成
+UTM
+├ Ubuntu-Log
+└ Ubuntu-NTP
+
+internet NTP
+↓
+Ubuntu-NTP
+↓
+Ubuntu-Log
+
+#### Ubuntu-NTP設定
+- chronyインストール
+sudo apt update
+sudo apt install chrony -y
+
+- 設定変更
+sudo nano /etc/chrony/chrony.conf
+以下を追記。
+allow 192.168.64.0/24 (LAN内クライアントからのNTPアクセス許可)
+local stratum 10 (自身を時刻源として利用可能にする)
+
+- Ubuntu-NTPはインターネット上のNTPから時刻同期をおこなうためpool行は有効のまま。
+
+- chrony再起動
+sudo systemctl restart chrony
+
+- 同期確認
+chronyc sources
+
+#### Ubuntu-Log設定
+- chronyインストール
+
+- chrony設定
+sudo nano /etc/chrony/chrony.conf
+pool行をコメントアウトし、無効化する
+Ubuntu-NTPを指定するため、以下を追記。
+server 192.168.64.7 iburst
+
+- chrony再起動
+
+- 同期確認
+
+#### 時刻が9時間ズレていた原因
+Ubuntuの初期タイムゾーンがUTCだった。
+
+タイムゾーン変更
+sudo timedatectl set-timezone Asia/Tokyo
+確認
+timedatectl
+
+※メモ※
+大きく時刻がズレている場合は以下のコマンドで即時時刻同期
+sudo chronyc makestep
+
+#### 学び
+- タイムゾーンはVMごとに設定する必要がある(NTPはUTCだけ同期する)
+- ^?は同期未確立
 
